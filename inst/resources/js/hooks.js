@@ -29,6 +29,37 @@ class RepeatingTableHeaders extends Paged.Handler {
 
 Paged.registerHandlers(RepeatingTableHeaders);
 
+// Repeat Table Footer
+
+class RepeatingTableFooters extends Paged.Handler {
+  constructor(chunker, polisher, caller) {
+    super(chunker, polisher, caller);
+  }
+
+  afterPageLayout(pageElement, page, breakToken, chunker) {
+    // Find all split table elements
+    let tables = pageElement.querySelectorAll("table[data-split-from]");
+
+    tables.forEach((table) => {
+      // Get the reference UUID of the node
+      let ref = table.dataset.ref;
+      // Find the node in the original source
+      let sourceTable = chunker.source.querySelector("[data-ref='" + ref + "']");
+      // Find if there is a header
+      let footer = sourceTable.querySelector("tfoot");
+      if (footer) {
+        // Clone the footer element
+        let clonedFooter = footer.cloneNode(true);
+        // Insert the footer at the start of the split table
+        table.insertBefore(clonedFooter, table.firstChild);
+      }
+    });
+
+  }
+}
+
+Paged.registerHandlers(RepeatingTableFooters);
+
 
 
 // Hooks for paged.js
